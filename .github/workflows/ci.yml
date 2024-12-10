@@ -1553,6 +1553,10 @@ jobs:
         mkdir build
         cd build
         export CPPINTEROP_BUILD_DIR=$PWD
+        export PATH="$LLVM_BUILD_DIR/bin:$PATH"
+        export LD_LIBRARY_PATH="$LLVM_BUILD_DIR/lib/:$LD_LIBRARY_PATH"
+        ls $LLVM_BUILD_DIR/bin
+        ls $LLVM_BUILD_DIR/lib
 
         if [[ "${cling_on}" == "ON" ]]; then
           emcmake  cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}        \
