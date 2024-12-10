@@ -625,7 +625,7 @@ jobs:
         mkdir build
         if [[ "${cling_on}" == "ON" ]]; then
           cd build
-          emcmake cmake -DLLVM_EXTERNAL_PROJECTS=cling \
+          cmake -DLLVM_EXTERNAL_PROJECTS=cling \
                         -DLLVM_EXTERNAL_CLING_SOURCE_DIR=../../cling  \
                         -DCMAKE_BUILD_TYPE=Release \
                         -DLLVM_HOST_TRIPLE=wasm32-unknown-emscripten \
@@ -639,10 +639,10 @@ jobs:
                         -DCLANG_ENABLE_BOOTSTRAP=OFF \
                         -DCMAKE_CXX_FLAGS="-Dwait4=__syscall_wait4"  \
                          ../llvm
-          emmake make clang -j ${{ env.ncpus }}
-          emmake make  cling -j ${{ env.ncpus }}
+          make clang -j ${{ env.ncpus }}
+          make  cling -j ${{ env.ncpus }}
           # Now build gtest.a and gtest_main for CppInterOp to run its tests.
-          emmake make gtest_main -j ${{ env.ncpus }}
+          make gtest_main -j ${{ env.ncpus }}
         else
           # Apply patches
           llvm_vers=$(echo "${{ matrix.clang-runtime }}" | tr '[:lower:]' '[:upper:]')
@@ -651,7 +651,7 @@ jobs:
             echo "Apply emscripten-clang${{ matrix.clang-runtime }}-*.patch patches:"
           fi
           cd build
-          emcmake cmake -DCMAKE_BUILD_TYPE=Release \
+          cmake -DCMAKE_BUILD_TYPE=Release \
                         -DLLVM_HOST_TRIPLE=wasm32-unknown-emscripten \
                         -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}" \
                         -DLLVM_ENABLE_LIBEDIT=OFF \
@@ -663,9 +663,9 @@ jobs:
                         -DCLANG_ENABLE_BOOTSTRAP=OFF \
                         -DCMAKE_CXX_FLAGS="-Dwait4=__syscall_wait4"  \
                         ../llvm
-          emmake make clang -j ${{ env.ncpus }}
-          emmake make clang-repl -j ${{ env.ncpus }}
-          emmake make lld -j ${{ env.ncpus }}
+          make clang -j ${{ env.ncpus }}
+          make clang-repl -j ${{ env.ncpus }}
+          make lld -j ${{ env.ncpus }}
         fi
         cd ../
         rm -rf $(find . -maxdepth 1 ! -name "build" ! -name "llvm" ! -name "clang" ! -name "lld" ! -name ".")
@@ -1553,10 +1553,6 @@ jobs:
         mkdir build
         cd build
         export CPPINTEROP_BUILD_DIR=$PWD
-        export PATH="$LLVM_BUILD_DIR/bin:$PATH"
-        export LD_LIBRARY_PATH="$LLVM_BUILD_DIR/lib/:$LD_LIBRARY_PATH"
-        ls $LLVM_BUILD_DIR/bin
-        ls $LLVM_BUILD_DIR/lib
 
         if [[ "${cling_on}" == "ON" ]]; then
           emcmake  cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}        \
