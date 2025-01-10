@@ -242,19 +242,19 @@ jobs:
       matrix:
         include:
           - name: win2025-msvc-clang-repl-19
-            os: windows-2022
+            os: windows-2025
             compiler: msvc
             clang-runtime: '19'
             cling: Off
             cppyy: Off
           - name: win2025-msvc-clang-repl-18
-            os: windows-2022
+            os: windows-2025
             compiler: msvc
             clang-runtime: '18'
             cling: Off
             cppyy: Off
           - name: win2025-msvc-clang-repl-17
-            os: windows-2022
+            os: windows-2025
             compiler: msvc
             clang-runtime: '17'
             cling: Off
