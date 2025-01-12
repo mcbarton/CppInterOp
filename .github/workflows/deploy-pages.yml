@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: ubu22-x86-gcc12-clang-repl-19-emscripten_wasm
-            os: ubuntu-22.04
-            compiler: gcc-12
+          - name: osx15-arm-clang-clang-repl-19-emscripten_wasm
+            os: macos-15
+            compiler: clang
             clang-runtime: '19'
             cling: Off
             micromamba_shell_init: bash
@@ -74,7 +74,7 @@ jobs:
     - name: Setup emsdk
       shell: bash -l {0}
       run: |
-          git clone https://github.com/emscripten-core/emsdk.git
+          git clone --depth=1 https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install  ${{ matrix.emsdk_ver }}
 
@@ -183,8 +183,8 @@ jobs:
           cd ./xeus-cpp/
           micromamba create -n xeus-lite-host jupyterlite-core -c conda-forge
           micromamba activate xeus-lite-host
-          python -m pip install jupyterlite-xeus jupyter_server
-          jupyter lite build --XeusAddon.prefix=${{ env.PREFIX }} --contents notebooks --output-dir dist
+          python -m pip install jupyterlite-xeus jupyter_server notebook
+          jupyter lite build --XeusAddon.prefix=${{ env.PREFIX }} --contents notebooks/xeus-cpp-lite-demo.ipynb --output-dir dist
           cp ${{ env.PREFIX }}/bin/xcpp.data dist/extensions/@jupyterlite/xeus/static
           cp ${{ env.PREFIX }}/lib/libclangCppInterOp.so dist/extensions/@jupyterlite/xeus/static
 
