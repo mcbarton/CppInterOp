@@ -15,6 +15,10 @@ set_output_directory(TestSharedLib
   LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/unittests/bin/$<CONFIG>/
   )
 
+set_target_properties(TestSharedLib
+  PROPERTIES NO_SONAME 1
+)
+
 if(EMSCRIPTEN)
 # Without this you get an error that -gc-sections and -r cannot be used together. 
 # Not sure I have picked the correct one to keep
