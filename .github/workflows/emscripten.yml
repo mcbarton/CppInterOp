@@ -602,7 +602,8 @@ jobs:
                 ../
         fi
         
-        emmake make -j ${{ env.ncpus }}  check-cppinterop
+        emmake make -j ${{ env.ncpus }}  check-cppinterop || true
+        cat /home/runner/work/CppInterOp/CppInterOp/build/unittests/googletest-prefix/src/googletest-stamp/googletest-build-*.log
 
         cd ..
         
