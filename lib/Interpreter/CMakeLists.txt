@@ -51,7 +51,6 @@ if(EMSCRIPTEN)
   set(link_libs
     ${cling_clang_interp}
     clangBasic
-    clangLex
     )
 else()
   set(link_libs
