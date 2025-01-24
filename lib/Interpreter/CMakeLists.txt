@@ -47,6 +47,15 @@ endif()
     set(cling_clang_interp clangInterpreter)
   endif()
 
+if(EMSCRIPTEN)
+  set(link_libs
+    ${cling_clang_interp}
+    clangAST
+    clangBasic
+    clangLex
+    clangSema
+    )
+else()
   set(link_libs
     ${cling_clang_interp}
     clangAST
@@ -55,6 +64,7 @@ endif()
     clangLex
     clangSema
     )
+endif()
 
   if(NOT WIN32)
     list(APPEND link_libs dl)
