@@ -43,6 +43,7 @@ export_executable_symbols(CppInterOpTests)
 
 unset(LLVM_LINK_COMPONENTS)
 
+if(NOT EMSCRIPTEN)
 add_cppinterop_unittest(DynamicLibraryManagerTests DynamicLibraryManagerTest.cpp)
 target_link_libraries(DynamicLibraryManagerTests
   PRIVATE
@@ -60,5 +61,6 @@ set_output_directory(DynamicLibraryManagerTests
   LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/TestSharedLib/unittests/bin/$<CONFIG>/
 )
 add_dependencies(DynamicLibraryManagerTests TestSharedLib)
+endif()
 #export_executable_symbols_for_plugins(TestSharedLib)
 add_subdirectory(TestSharedLib)

@@ -18,7 +18,6 @@
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/Path.h"
 
-#ifndef EMSCRIPTEN
 #include <gmock/gmock.h>
 #endif
 #include "gtest/gtest.h"
@@ -29,7 +28,9 @@
 using ::testing::StartsWith;
 #endif
 TEST(InterpreterTest, Version) {
+  #ifndef EMSCRIPTEN
   EXPECT_THAT(Cpp::GetVersion(), StartsWith("CppInterOp version"));
+  #endif
 }
 
 #ifdef NDEBUG
