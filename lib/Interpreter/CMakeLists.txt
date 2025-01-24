@@ -68,7 +68,7 @@ endif()
 
   # Get rid of libLLVM-X.so which is appended to the list of static libraries.
   if (LLVM_LINK_LLVM_DYLIB)
-    message(STATUS "In here ${LLVM_LINK_LLVM_DYLIB}"
+    message(STATUS "In here ${LLVM_LINK_LLVM_DYLIB}")
     set(new_libs ${link_libs})
     set(libs ${new_libs})
     while(NOT "${new_libs}" STREQUAL "")
