@@ -68,6 +68,7 @@ endif()
 
   # Get rid of libLLVM-X.so which is appended to the list of static libraries.
   if (LLVM_LINK_LLVM_DYLIB)
+    message(STATUS "In here ${LLVM_LINK_LLVM_DYLIB}"
     set(new_libs ${link_libs})
     set(libs ${new_libs})
     while(NOT "${new_libs}" STREQUAL "")
@@ -91,6 +92,7 @@ endif()
             endif()
           endforeach(transitive_lib)
           # Update the target properties with the list of only static libraries.
+          message(STATUS "static_transitive_libs ${static_transitive_libs}")
           set_target_properties(${lib} PROPERTIES INTERFACE_LINK_LIBRARIES "${static_transitive_libs}")
           set(static_transitive_libs "")
         endif()
