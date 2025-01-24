@@ -53,7 +53,6 @@ if(EMSCRIPTEN)
     clangAST
     clangBasic
     clangLex
-    clangSema
     )
 else()
   set(link_libs
