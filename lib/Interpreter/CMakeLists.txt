@@ -135,9 +135,9 @@ if(EMSCRIPTEN)
   set_target_properties(clangCppInterOp
   PROPERTIES NO_SONAME 1
 )
-  target_link_options(clangCppInterOp PRIVATE
-    "SHELL: -s EXPORT_ALL=1 -s LINKABLE=1 -s WASM_BIGINT  -s SIDE_MODULE=1"
-  )
+ #  target_link_options(clangCppInterOp PRIVATE
+ #    "SHELL: -s EXPORT_ALL=1 -s LINKABLE=1 -s WASM_BIGINT  -s SIDE_MODULE=1"
+ #  )
 
 endif()
 
