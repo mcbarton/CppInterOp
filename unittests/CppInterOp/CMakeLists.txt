@@ -26,7 +26,7 @@ set_output_directory(CppInterOpTests
 
 if(EMSCRIPTEN)
   target_link_options(CppInterOpTests PRIVATE
-    "SHELL: -s LINKABLE=1 -s WASM_BIGINT -s MAIN_MODULE=1 --allow-multiple-definition"
+    "SHELL: -s LINKABLE=1 -s WASM_BIGINT -s MAIN_MODULE=1"
   )
 endif()
 
@@ -51,7 +51,7 @@ target_link_libraries(DynamicLibraryManagerTests
 
 if(EMSCRIPTEN)
   target_link_options(DynamicLibraryManagerTests PRIVATE
-    "SHELL: -s LINKABLE=1 -s WASM_BIGINT -s MAIN_MODULE=1 --allow-multiple-definition"
+    "SHELL: -s LINKABLE=1 -s WASM_BIGINT -s MAIN_MODULE=1"
   )
 endif()
 
