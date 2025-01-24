@@ -5,7 +5,6 @@ if(EMSCRIPTEN)
   set(LLVM_LINK_COMPONENTS
     BinaryFormat
     Core
-    Object
     Support
   )
 else()
