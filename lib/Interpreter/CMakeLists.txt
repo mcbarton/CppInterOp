@@ -1,8 +1,15 @@
 if(EMSCRIPTEN)
   set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
   set(CMAKE_STRIP FALSE)
-endif()
 
+  set(LLVM_LINK_COMPONENTS
+    ${LLVM_TARGETS_TO_BUILD}
+    BinaryFormat
+    Core
+    Object
+    Support
+  )
+else()
   set(LLVM_LINK_COMPONENTS
     ${LLVM_TARGETS_TO_BUILD}
     BinaryFormat
@@ -11,6 +18,7 @@ endif()
     OrcJit
     Support
   )
+)
   # FIXME: Investigate why this needs to be conditionally included.
   if ("LLVMFrontendDriver" IN_LIST LLVM_AVAILABLE_LIBS)
     list(APPEND LLVM_LINK_COMPONENTS  FrontendDriver)
