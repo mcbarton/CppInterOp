@@ -33,7 +33,7 @@ ExternalProject_Add(
   # CMAKE_ARGS -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=DebugLibs
   #            -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=ReleaseLibs
   #            -Dgtest_force_shared_crt=ON
-  CONFIGURE_COMMAND emcmake cmake -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND emcmake cmake 
   		    -S ${CMAKE_BINARY_DIR}/unittests/googletest-prefix/src/googletest/
 		    -B ${CMAKE_BINARY_DIR}/unittests/googletest-prefix/src/googletest-build/
   BUILD_COMMAND emmake make
