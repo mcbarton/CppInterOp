@@ -105,22 +105,15 @@ endif()
       FrontendHLSL
       LTO
       )
-    if(EMSCRIPTEN)
-    # We will need to append the missing dependencies to pull in the right
-    # LLVM library dependencies.
-    list(APPEND link_libs
-      clangStaticAnalyzerCore
-      )
-    else()
     # We will need to append the missing dependencies to pull in the right
     # LLVM library dependencies.
     list(APPEND link_libs
       clangCodeGen
       clangStaticAnalyzerCore
       )
-    endif()
   endif(LLVM_LINK_LLVM_DYLIB)
-
+  message(STATUS "Test DLM ${DLM}")
+  message(STATUS "Test link_libs ${link_libs}")
   add_llvm_library(clangCppInterOp
     DISABLE_LLVM_LINK_LLVM_DYLIB
     CppInterOp.cpp
