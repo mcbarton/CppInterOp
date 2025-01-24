@@ -3,7 +3,6 @@ if(EMSCRIPTEN)
   set(CMAKE_STRIP FALSE)
   message(STATUS "LLVM_TARGETS_TO_BUILD ${LLVM_TARGETS_TO_BUILD}")
   set(LLVM_LINK_COMPONENTS
-    ${LLVM_TARGETS_TO_BUILD}
     BinaryFormat
     Core
     Object
