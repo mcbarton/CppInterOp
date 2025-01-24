@@ -25,8 +25,9 @@
 
 #include <algorithm>
 
+#ifndef EMSCRIPTEN
 using ::testing::StartsWith;
-
+#endif
 TEST(InterpreterTest, Version) {
   EXPECT_THAT(Cpp::GetVersion(), StartsWith("CppInterOp version"));
 }
