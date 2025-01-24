@@ -33,7 +33,6 @@ if(WIN32)
   target_link_libraries(${name} PUBLIC ${ARG_LIBRARIES} ${gtest_libs})
   set_property(TARGET ${name} APPEND_STRING PROPERTY LINK_FLAGS "${MSVC_EXPORTS}")
 else()
-PRIVATE
   if(EMSCRIPTEN)
     target_link_libraries(${name} PUBLIC ${ARG_LIBRARIES} ${gtest_libs} clangCppInterOp)
   else()
