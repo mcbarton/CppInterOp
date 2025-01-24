@@ -366,6 +366,10 @@ if (LLVM_COMPILER_IS_GCC_COMPATIBLE)
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-common -Woverloaded-virtual -Wcast-qual -fno-strict-aliasing -pedantic -Wno-long-long -Wall -W -Wno-unused-parameter -Wwrite-strings")
   endif ()
+  # Needed due an error which occurs when you compile gtest on emscripten
+  if (EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-sign-compare")
+  endif()
 endif ()
 
 # Fixes "C++ exception handler used, but unwind semantics are not enabled" warning Windows
