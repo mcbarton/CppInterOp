@@ -451,13 +451,7 @@ option(CPPINTEROP_ENABLE_DOXYGEN "Use doxygen to generate CppInterOp interal API
 option(CPPINTEROP_ENABLE_SPHINX "Use sphinx to generage CppInterOp user documentation")
 
 
-if(EMSCRIPTEN)
-    message("Build with emscripten")
-    option(CPPINTEROP_ENABLE_TESTING "Enables the testing infrastructure." OFF)
-else()
-    message("Build with cmake")
-    option(CPPINTEROP_ENABLE_TESTING "Enables the testing infrastructure." ON)
-endif()
+option(CPPINTEROP_ENABLE_TESTING "Enables the testing infrastructure." ON)
 
 if(MSVC)
 

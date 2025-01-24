@@ -602,7 +602,7 @@ jobs:
                 ../
         fi
         
-        emmake make -j ${{ env.ncpus }} install
+        emmake make -j ${{ env.ncpus }}  check-cppinterop
 
         cd ..
         
