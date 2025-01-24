@@ -4,7 +4,6 @@ if(EMSCRIPTEN)
   message(STATUS "LLVM_TARGETS_TO_BUILD ${LLVM_TARGETS_TO_BUILD}")
   set(LLVM_LINK_COMPONENTS
     BinaryFormat
-    Core
     Support
   )
 else()
