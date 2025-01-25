@@ -2,18 +2,11 @@ set(LLVM_LINK_COMPONENTS
   Support
 )
 
-add_llvm_library(CppInterOpTests
-  DISABLE_LLVM_LINK_LLVM_DYLIB
-  CUDATest.cpp
-  EnumReflectionTest.cpp
-  FunctionReflectionTest.cpp
-  InterpreterTest.cpp
-  JitTest.cpp
-  ScopeReflectionTest.cpp
-  TypeReflectionTest.cpp
-  Utils.cpp
-  VariableReflectionTest.cpp
-  )
+llvm_map_components_to_libnames(
+        llvm_libs
+        Support
+)
+
 add_cppinterop_unittest(CppInterOpTests
   CUDATest.cpp
   EnumReflectionTest.cpp
@@ -28,7 +21,7 @@ add_cppinterop_unittest(CppInterOpTests
 
 target_link_libraries(CppInterOpTests
   PRIVATE
-  clangCppInterOp
+  clangCppInterOp ${llvm_libs}
 )
 
 set_output_directory(CppInterOpTests
