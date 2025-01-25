@@ -34,7 +34,11 @@ if(WIN32)
   set_property(TARGET ${name} APPEND_STRING PROPERTY LINK_FLAGS "${MSVC_EXPORTS}")
 else()
   if(EMSCRIPTEN)
-    target_link_libraries(${name} PUBLIC ${ARG_LIBRARIES} ${gtest_libs} clangCppInterOp)
+    add_llvm_library(${name}
+    DISABLE_LLVM_LINK_LLVM_DYLIB
+    LINK_LIBS
+    ${gtest_libs} ${link_libs}
+  )
   else()
     target_link_libraries(${name} PUBLIC ${ARG_LIBRARIES} ${gtest_libs} pthread)
   endif()
