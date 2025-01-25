@@ -4,7 +4,12 @@ set(LLVM_LINK_COMPONENTS
 
 llvm_map_components_to_libnames(
         llvm_libs
-        Support
+      ${LLVM_TARGETS_TO_BUILD}
+      BinaryFormat
+      Core
+      Object
+      OrcJit
+      Support
 )
 
 add_cppinterop_unittest(CppInterOpTests
