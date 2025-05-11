@@ -154,6 +154,23 @@ jobs:
           cd emsdk
           ./emsdk install  ${{ matrix.emsdk_ver }}
 
+    - name: Apply Emscripten Forges emsdk patches (unix systems)
+      if: ${{ runner.os != 'windows' && steps.cache.outputs.cache-hit != 'true' }}
+      run: |
+          git clone --depth=1 https://github.com/emscripten-forge/recipes.git
+          export TOP_LEVEL_DIR=$PWD
+          cd ./emsdk/upstream/emscripten/
+          cat $TOP_LEVEL_DIR/patches/*.patch | patch -p1 --verbose
+          
+    - name: Apply Emscripten Forges emsdk patches (Windows)
+      if: ${{ runner.os == 'windows' && steps.cache.outputs.cache-hit != 'true' }}
+      run: |
+          choco install gnuwin32-coreutils.install
+          git clone --depth=1 https://github.com/emscripten-forge/recipes.git
+          $env:TOP_LEVEL_DIR= $PWD.Path
+          cd .\emsdk\upstream\emscripten/
+          cat $env:TOP_LEVEL_DIR\patches\*.patch | patch.exe -p1 --verbose
+  
     - name: Setup default Build Type on *nux
       if: ${{ runner.os != 'windows' && steps.cache.outputs.cache-hit != 'true' }}
       run: |
@@ -530,6 +547,23 @@ jobs:
           git clone --depth=1 https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install  ${{ matrix.emsdk_ver }}
+
+    - name: Apply Emscripten Forges emsdk patches (unix systems)
+      if: ${{ runner.os != 'windows' }}
+      run: |
+          git clone --depth=1 https://github.com/emscripten-forge/recipes.git
+          export TOP_LEVEL_DIR=$PWD
+          cd ./emsdk/upstream/emscripten/
+          cat $TOP_LEVEL_DIR/patches/*.patch | patch -p1 --verbose
+          
+    - name: Apply Emscripten Forges emsdk patches (Windows)
+      if: ${{ runner.os == 'windows' }}
+      run: |
+          choco install gnuwin32-coreutils.install
+          git clone --depth=1 https://github.com/emscripten-forge/recipes.git
+          $env:TOP_LEVEL_DIR= $PWD.Path
+          cd .\emsdk\upstream\emscripten/
+          cat $env:TOP_LEVEL_DIR\patches\*.patch | patch.exe -p1 --verbose
 
     - name: Restore Cache LLVM/Clang runtime build directory
       uses: actions/cache/restore@v4
