@@ -26,6 +26,7 @@ git clone https://github.com/emscripten-core/emsdk.git
 ```
 
 We will now patch this emsdk with the patches in Emscripten forge. To do this on Linux and osx execute the following
+
 ```bash
 git clone --depth=1 https://github.com/emscripten-forge/recipes.git
 export TOP_LEVEL_DIR=$PWD
@@ -42,7 +43,7 @@ cd .\emsdk\upstream\emscripten/
 cat $env:TOP_LEVEL_DIR\patches\*.patch | patch.exe -p1 --verbose
 ```
 
-and to activate the emsdk environment on Linux and osx execute (we are defining SYSROOT_PATH for use later)
+To activate the emsdk environment on Linux and osx execute (we are defining SYSROOT_PATH for use later)
 
 ```bash
 ./emsdk/emsdk activate 3.1.73
