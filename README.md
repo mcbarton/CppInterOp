@@ -23,6 +23,23 @@ In such scenarios CppInterOp can be used to provide the necessary introspection 
 
 </div>
 
+<details>
+  <summary><strong>reStructuredText</strong></summary>
+
+  <pre><code class="language-rst">
+`Rubin Observatory &lt;https://www.lsst.org&gt;`__
+  </code></pre>
+</details>
+
+<details>
+  <summary><strong>Markdown</strong></summary>
+
+  <pre><code class="language-md">
+[Rubin Observatory](https://www.lsst.org)
+  </code></pre>
+</details>
+
+
 ## CppInterOp Introduction
 
 The CppInterOp library provides a minimalist approach for other languages to
