@@ -11,6 +11,13 @@
 
 </div>
 
+```mermaid
+graph TD
+    A[Start] --> B{Is it working?}
+    B -- Yes --> C[Great!]
+    B -- No --> D[Check again]
+```
+
 CppInterOp exposes API from [Clang](http://clang.llvm.org/) and [LLVM](https://llvm.org) in a backward compatible way.
 The API support downstream tools that utilize interactive C++ by using the compiler as a service.
 That is, embed Clang and LLVM as a libraries in their codebases.
