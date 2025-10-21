@@ -97,7 +97,7 @@ target_link_libraries(DynamicLibraryManagerTests
 )
 
 if(EMSCRIPTEN)
-  set(TEST_SHARED_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/TestSharedLib/unittests/bin/Release/")
+  set(TEST_SHARED_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/TestSharedLib/unittests/bin/$<CONFIG>/")
   string(REPLACE "@" "@@" ESCAPED_TEST_SHARED_LIBRARY_PATH "${TEST_SHARED_LIBRARY_PATH}")
   # Check explanation of Emscripten-specific link flags for CppInterOpTests above for DynamicLibraryManagerTests as well.
   target_link_options(DynamicLibraryManagerTests
@@ -110,6 +110,16 @@ if(EMSCRIPTEN)
     PUBLIC "SHELL: --emrun"
     PUBLIC "SHELL: --preload-file ${ESCAPED_TEST_SHARED_LIBRARY_PATH}/libTestSharedLib.so@/libTestSharedLib.so"
   )
+endif()
+
+if (EMSCRIPTEN)
+  if (BUILD_SHARED_LIBS)
+    target_compile_definitions(CppInterOpTests PRIVATE "EMSCRIPTEN_SHARED_LIBRARY")
+    target_compile_definitions(DynamicLibraryManagerTests PRIVATE "EMSCRIPTEN_SHARED_LIBRARY")
+  else()
+    target_compile_definitions(CppInterOpTests PRIVATE "EMSCRIPTEN_STATIC_LIBRARY")
+    target_compile_definitions(DynamicLibraryManagerTests PRIVATE "EMSCRIPTEN_STATIC_LIBRARY")
+  endif()
 endif()
 
 set_output_directory(DynamicLibraryManagerTests

@@ -234,6 +234,7 @@ TEST(VariableReflectionTest, GetVariableType) {
     E<int> e;
     E<int> *f;
     int g[4];
+    auto fn = []() { return 1; };
     )";
 
   GetAllTopLevelDecls(code, Decls);
@@ -245,6 +246,9 @@ TEST(VariableReflectionTest, GetVariableType) {
   EXPECT_EQ(Cpp::GetTypeAsString(Cpp::GetVariableType(Decls[6])), "E<int>");
   EXPECT_EQ(Cpp::GetTypeAsString(Cpp::GetVariableType(Decls[7])), "E<int> *");
   EXPECT_EQ(Cpp::GetTypeAsString(Cpp::GetVariableType(Decls[8])), "int[4]");
+
+  EXPECT_FALSE(Cpp::IsLambdaClass(Cpp::GetVariableType(Decls[8])));
+  EXPECT_TRUE(Cpp::IsLambdaClass(Cpp::GetVariableType(Decls[9])));
 }
 
 #define CODE                                                                   \
@@ -299,6 +303,47 @@ TEST(VariableReflectionTest, GetVariableOffset) {
 
   auto* VD_C_s_a = Cpp::GetNamed("s_a", Decls[4]); // C::s_a
   EXPECT_TRUE((bool) Cpp::GetVariableOffset(VD_C_s_a));
+
+  struct K {
+    int x;
+    int y;
+    int z;
+  };
+  Cpp::Declare("struct K;");
+  Cpp::TCppScope_t k = Cpp::GetNamed("K");
+  EXPECT_TRUE(k);
+
+  Cpp::Declare("struct K { int x; int y; int z; };");
+
+  datamembers.clear();
+  Cpp::GetDatamembers(k, datamembers);
+  EXPECT_EQ(datamembers.size(), 3);
+
+  EXPECT_EQ(Cpp::GetVariableOffset(datamembers[0]), offsetof(K, x));
+  EXPECT_EQ(Cpp::GetVariableOffset(datamembers[1]), offsetof(K, y));
+  EXPECT_EQ(Cpp::GetVariableOffset(datamembers[2]), offsetof(K, z));
+
+  Cpp::Declare(R"(
+    template <typename T> struct ClassWithStatic {
+      static T const ref_value;
+    };
+    template <typename T> T constexpr ClassWithStatic<T>::ref_value = 42;
+  )");
+
+  Cpp::TCppScope_t klass = Cpp::GetNamed("ClassWithStatic");
+  EXPECT_TRUE(klass);
+
+  ASTContext& C = Interp->getCI()->getASTContext();
+  std::vector<Cpp::TemplateArgInfo> template_args = {
+      {C.IntTy.getAsOpaquePtr()}};
+  Cpp::TCppScope_t klass_instantiated = Cpp::InstantiateTemplate(
+      klass, template_args.data(), template_args.size());
+  EXPECT_TRUE(klass_instantiated);
+
+  Cpp::TCppScope_t var = Cpp::GetNamed("ref_value", klass_instantiated);
+  EXPECT_TRUE(var);
+
+  EXPECT_TRUE(Cpp::GetVariableOffset(var));
 }
 
 #define CODE                                                                   \
@@ -489,7 +534,7 @@ TEST(VariableReflectionTest, IsConstVariable) {
 }
 
 TEST(VariableReflectionTest, DISABLED_GetArrayDimensions) {
-  std::vector<Decl *> Decls, SubDecls;
+  std::vector<Decl *> Decls;
   std::string code =  R"(
     int a;
     int b[1];

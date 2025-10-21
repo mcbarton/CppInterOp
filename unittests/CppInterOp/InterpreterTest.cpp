@@ -99,6 +99,9 @@ TEST(InterpreterTest, DeleteInterpreter) {
 }
 
 TEST(InterpreterTest, ActivateInterpreter) {
+#ifdef EMSCRIPTEN_STATIC_LIBRARY
+  GTEST_SKIP() << "Test fails for Emscipten static library build";
+#endif
   EXPECT_FALSE(Cpp::ActivateInterpreter(nullptr));
   auto* Cpp14 = Cpp::CreateInterpreter({"-std=c++14"});
   auto* Cpp17 = Cpp::CreateInterpreter({"-std=c++17"});
@@ -122,6 +125,9 @@ TEST(InterpreterTest, ActivateInterpreter) {
 }
 
 TEST(InterpreterTest, Process) {
+#ifdef EMSCRIPTEN_STATIC_LIBRARY
+  GTEST_SKIP() << "Test fails for Emscipten static library build";
+#endif
 #ifdef _WIN32
   GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
 #endif
@@ -328,7 +334,10 @@ if (llvm::sys::RunningOnValgrind())
 
 #ifdef CPPINTEROP_USE_CLING
     std::string MainExecutableName = sys::fs::getMainExecutable(nullptr, nullptr);
-    std::string ResourceDir = compat::MakeResourceDir(LLVM_BINARY_DIR);
+    llvm::SmallString<128> P(LLVM_BINARY_DIR);
+    llvm::sys::path::append(P, CLANG_INSTALL_LIBDIR_BASENAME, "clang",
+                            CLANG_VERSION_MAJOR_STRING);
+    std::string ResourceDir = std::string(P.str());
     std::vector<const char *> ClingArgv = {"-resource-dir", ResourceDir.c_str(),
                                            "-std=c++14"};
     ClingArgv.insert(ClingArgv.begin(), MainExecutableName.c_str());

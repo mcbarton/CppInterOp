@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -23,9 +23,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v2.0.3
+        uses: KyleMayes/install-llvm-action@v2.0.7
         with:
-          version: "17.0.6"
+          version: "20.1.4"
 
       - name: install lit
         run: pip install lit

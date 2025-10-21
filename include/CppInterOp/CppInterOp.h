@@ -35,6 +35,7 @@
 namespace Cpp {
 using TCppIndex_t = size_t;
 using TCppScope_t = void*;
+using TCppConstScope_t = const void*;
 using TCppType_t = void*;
 using TCppFunction_t = void*;
 using TCppConstFunction_t = const void*;
@@ -92,6 +93,18 @@ enum Operator : unsigned char {
 };
 
 enum OperatorArity : unsigned char { kUnary = 1, kBinary, kBoth };
+
+/// Enum modelling CVR qualifiers.
+enum QualKind : unsigned char {
+  Const = 1 << 0,
+  Volatile = 1 << 1,
+  Restrict = 1 << 2
+};
+
+inline QualKind operator|(QualKind a, QualKind b) {
+  return static_cast<QualKind>(static_cast<unsigned char>(a) |
+                               static_cast<unsigned char>(b));
+}
 
 /// A class modeling function calls for functions produced by the interpreter
 /// in compiled code. It provides an information if we are calling a standard
@@ -224,6 +237,8 @@ public:
   ///\param[in] nary - Use array new if we have to construct an array of
   ///           objects (nary > 1).
   ///\param[in] args - a pointer to a argument list and argument size.
+  ///\param[in] is_arena - a pointer that indicates if placement new is to be
+  /// used
   // FIXME: Change the type of withFree from int to bool in the wrapper code.
   void InvokeConstructor(void* result, unsigned long nary = 1,
                          ArgList args = {}, void* is_arena = nullptr) const {
@@ -305,6 +320,18 @@ CPPINTEROP_API bool IsEnumConstant(TCppScope_t handle);
 
 /// Checks if the passed value is an enum type or not.
 CPPINTEROP_API bool IsEnumType(TCppType_t type);
+
+/// Checks if the passed type has qual Qualifiers
+/// qual can be ORed value of enum QualKind
+CPPINTEROP_API bool HasTypeQualifier(TCppType_t type, QualKind qual);
+
+/// Returns type with the qual Qualifiers removed
+/// qual can be ORed value of enum QualKind
+CPPINTEROP_API TCppType_t RemoveTypeQualifier(TCppType_t type, QualKind qual);
+
+/// Returns type with the qual Qualifiers added
+/// qual can be ORed value of enum QualKind
+CPPINTEROP_API TCppType_t AddTypeQualifier(TCppType_t type, QualKind qual);
 
 /// Extracts enum declarations from a specified scope and stores them in
 /// vector
@@ -545,6 +572,9 @@ void GetEnumConstantDatamembers(TCppScope_t scope,
 /// This is a Lookup function to be used specifically for data members.
 CPPINTEROP_API TCppScope_t LookupDatamember(const std::string& name,
                                             TCppScope_t parent);
+
+/// Check if the given type is a lamda class
+CPPINTEROP_API bool IsLambdaClass(TCppType_t type);
 
 /// Gets the type of the variable that is passed as a parameter.
 CPPINTEROP_API TCppType_t GetVariableType(TCppScope_t var);
@@ -836,34 +866,38 @@ enum : long int {
 CPPINTEROP_API std::vector<long int> GetDimensions(TCppType_t type);
 
 /// Allocates memory required by an object of a given class
-/// \c scope Given class for which to allocate memory for
-/// \c count is used to indicate the number of objects to allocate for.
+/// \param[in] scope Given class for which to allocate memory for
+/// \param[in] count is used to indicate the number of objects to allocate for.
 CPPINTEROP_API TCppObject_t Allocate(TCppScope_t scope,
                                      TCppIndex_t count = 1UL);
 
 /// Deallocates memory for a given class.
-/// \c scope Class to indicate size of memory to deallocate
-/// \c count is used to indicate the number of objects to dallocate for
+/// \param[in] scope Class to indicate size of memory to deallocate
+/// \param[in] count is used to indicate the number of objects to dallocate for
 CPPINTEROP_API void Deallocate(TCppScope_t scope, TCppObject_t address,
                                TCppIndex_t count = 1UL);
 
 /// Creates one or more objects of class \c scope by calling its default
 /// constructor.
-/// \param[in] scope Class to construct
+/// \param[in] scope Class to construct, or handle to Constructor
 /// \param[in] arena If set, this API uses placement new to construct at this
 /// address.
 /// \param[in] is used to indicate the number of objects to construct.
+/// \returns a pointer to the constructed object, which is arena if placement
+/// new is used.
 CPPINTEROP_API TCppObject_t Construct(TCppScope_t scope, void* arena = nullptr,
                                       TCppIndex_t count = 1UL);
 
 /// Destroys one or more objects of a class
 /// \param[in] This this pointer of the object to destruct. Can also be the
 /// starting address of an array of objects
+/// \param[in] scope Class to destruct
 /// \param[in] withFree if true, we call operator delete/free, else just the
 /// destructor
 /// \param[in] count indicate the number of objects to destruct, if \c This
 /// points to an array of objects
-CPPINTEROP_API void Destruct(TCppObject_t This, TCppScope_t type,
+/// \returns true if wrapper generation and invocation succeeded.
+CPPINTEROP_API bool Destruct(TCppObject_t This, TCppConstScope_t scope,
                              bool withFree = true, TCppIndex_t count = 0UL);
 
 /// @name Stream Redirection
