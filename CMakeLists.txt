@@ -232,7 +232,7 @@ endif()
 
   ## Clang 18 require c++17 or later.
   if (NOT CMAKE_CXX_STANDARD)
-    set (CMAKE_CXX_STANDARD 17)
+    set (CMAKE_CXX_STANDARD 20)
   endif()
   if (CMAKE_CXX_STANDARD LESS 17)
     message(fatal "LLVM/CppInterOp requires c++17 or later")
