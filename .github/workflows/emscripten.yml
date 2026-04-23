@@ -145,7 +145,7 @@ jobs:
         mkdir native_build
         cd native_build
         cmake -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD=host -DCMAKE_BUILD_TYPE=Release ../llvm/
-        cmake --build . --target llvm-tblgen clang-tblgen LLVMCore LLVMOption --parallel $(nproc --all)
+        cmake --build . --target llvm-tblgen clang-tblgen --parallel $(nproc --all)
         export NATIVE_DIR=$PWD/bin/
         cd ..
 
@@ -176,7 +176,7 @@ jobs:
         mkdir native_build
         cd native_build
         cmake -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD=host -DCMAKE_BUILD_TYPE=Release -G Ninja ../llvm/
-        cmake --build . --target llvm-tblgen clang-tblgen LLVMCore LLVMOption --parallel $(nproc --all)
+        cmake --build . --target llvm-tblgen clang-tblgen --parallel $(nproc --all)
         $env:PWD_DIR= $PWD.Path
         $env:NATIVE_DIR="$env:PWD_DIR/bin/"
         cd ..
