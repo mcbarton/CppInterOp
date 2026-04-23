@@ -181,6 +181,7 @@ runs:
         # Use the native LLVM build (not the Emscripten cross-build) since
         # cppinterop-tblgen only needs libLLVMTableGen and libLLVMSupport.
         NATIVE_LLVM_BUILD_DIR="$(pwd)/llvm-project/native_build"
+        find $NATIVE_LLVM_BUILD_DIR -name "*"
         mkdir -p native_cppinterop_build && pushd native_cppinterop_build
         cmake -DCMAKE_BUILD_TYPE=Release \
               -DLLVM_DIR=$NATIVE_LLVM_BUILD_DIR/lib/cmake/llvm \
