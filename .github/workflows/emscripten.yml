@@ -38,6 +38,7 @@ jobs:
             emsdk_ver: "4.0.9"
             build_static_library: ${{ github.event_name == 'schedule' && 'On' || 'Off' }}
             micromamba_shell_init: bash
+            run-in-prs: true
           - name: ubu24-x86-clang-repl-21-emscripten
             os: ubuntu-24.04
             clang-runtime: '21'
@@ -46,6 +47,7 @@ jobs:
             emsdk_ver: "4.0.9"
             build_static_library: ${{ github.event_name == 'schedule' && 'On' || 'Off' }}
             micromamba_shell_init: bash
+            run-in-prs: true
           - name: win2025-x86-clang-repl-21-emscripten
             os: windows-2025
             clang-runtime: '21'
@@ -54,6 +56,7 @@ jobs:
             emsdk_ver: "4.0.9"
             build_static_library: ${{ github.event_name == 'schedule' && 'On' || 'Off' }}
             micromamba_shell_init: powershell
+            run-in-prs: true
 
     steps:
     - uses: actions/checkout@v6
