@@ -5,10 +5,11 @@ add_tablegen(cppinterop-tblgen CPPINTEROP
   TableGen.cpp
 )
 
-target_link_libraries(cppinterop-tblgen
-  PRIVATE
-  LLVMTableGen
-  LLVMSupport
-  LLVMCore
-  LLVMOption
+llvm_map_components_to_libnames(LLVM_LIBS
+  Core
+  Support
+  TableGen
+  Option
 )
+
+target_link_libraries(cppinterop-tblgen PRIVATE ${LLVM_LIBS})
