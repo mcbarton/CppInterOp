@@ -487,6 +487,7 @@ runs:
         mkdir native_cppinterop_build
         pushd native_cppinterop_build
         $env:NATIVE_LLVM_BUILD_DIR="$env:PWD_DIR\llvm-project\native_build"
+        find.exe "$env:NATIVE_LLVM_BUILD_DIR"
         cmake -DCMAKE_BUILD_TYPE=Release `
               -DLLVM_DIR="$env:NATIVE_LLVM_BUILD_DIR\lib\cmake\llvm" `
               -DCPPINTEROP_ENABLE_TESTING=OFF `
