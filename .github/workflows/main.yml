@@ -1,4 +1,4 @@
-name: CI
+name: Native Builds
 
 on:
   pull_request:
@@ -21,93 +21,234 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Rows omit fields that match these defaults:
-        #   python-version:       '3.14'
-        #   flavor:               '' (default — pull llvm-release from
-        #                            ci-workflows' Releases cache)
-        # arch is derived from the os slug inside setup-llvm; pass an
-        # explicit `flavor-arch` only on hosts whose os name doesn't
-        # carry the architecture (none of GHA's runner images today).
-        # `flavor` selects the LLVM source per row:
-        #   ''       latest LLVM (cells.yaml carries the cell)
-        #   system   apt-llvm.org / brew llvm@N — for older majors
-        #            the package manager already ships
-        #   asan     llvm-asan recipe
-        #   msan     llvm-msan recipe (Linux x86_64 only)
-        #   cling    llvm-root recipe + cling built on top
         include:
-          # Ubuntu Arm
-          - { name: ubu24-arm-gcc12-llvm22-vg, os: ubuntu-24.04-arm, compiler: gcc-12, clang-runtime: '22', Valgrind: On }
-          # Ubuntu X86
-          - { name: ubu24-x86-gcc12-llvm22, os: ubuntu-24.04, compiler: gcc-12, clang-runtime: '22' }
-          - { name: ubu24-x86-clang22-llvm22-asan-ubsan, os: ubuntu-24.04, compiler: clang-22, clang-runtime: '22', sanitizer: "Address;Undefined", flavor: asan }
-          - { name: ubu24-x86-clang22-llvm22-msan, os: ubuntu-24.04, compiler: clang-22, clang-runtime: '22', sanitizer: "Memory", flavor: msan }
-          - { name: ubu24-x86-gcc12-llvm21-cppyy-vg, os: ubuntu-24.04, compiler: gcc-12, clang-runtime: '21', cppyy: On, Valgrind: On, flavor: system }
-          - { name: ubu24-x86-gcc12-llvm22-cppyy, os: ubuntu-24.04, compiler: gcc-12, clang-runtime: '22', cppyy: On }
-          - { name: ubu24-x86-gcc14-cling-llvm20-cppyy, os: ubuntu-24.04, compiler: gcc-14, clang-runtime: '20', cling: 'On', cppyy: On, flavor: cling, flavor-version: 'cling-llvm20' }
-          # selfh-ubu22-x86-gcc12-llvm22-cuda lives in `build-selfhost`
-          # below; it's the only row that needs the dell awake.
-          - name: ubu24-x86-gcc12-llvm22-vg
+          # Ubuntu Arm Jobs
+          - name: ubu24-arm-gcc12-clang-repl-22
+            os: ubuntu-24.04-arm
+            compiler: gcc-12
+            clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            Valgrind: On
+            python-version: '3.14'
+          - name: ubu24-arm-gcc12-clang-repl-21-cppyy
+            os: ubuntu-24.04-arm
+            compiler: gcc-12
+            clang-runtime: '21'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          - name: ubu24-arm-gcc12-clang-repl-20-cppyy
+            os: ubuntu-24.04-arm
+            compiler: gcc-12
+            clang-runtime: '20'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.13'
+          - name: ubu24-arm-gcc14-clang20-cling-cppyy
+            os: ubuntu-24.04-arm
+            compiler: gcc-14
+            clang-runtime: '20'
+            cling: On
+            cppyy: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          # Ubuntu X86 Jobs
+          - name: ubu24-x86-gcc12-clang-repl-22
             os: ubuntu-24.04
             compiler: gcc-12
             clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
             Valgrind: On
-          # MacOS Arm
-          - { name: osx26-arm-clang-llvm22, os: macos-26, compiler: clang, clang-runtime: '22' }
-          - { name: osx26-arm-clang-llvm21-cppyy, os: macos-26, compiler: clang, clang-runtime: '21', cppyy: On, flavor: system }
-          - { name: osx26-arm-clang-cling-llvm20-cppyy, os: macos-26, compiler: clang, clang-runtime: '20', cling: 'On', cppyy: On, flavor: cling, flavor-version: 'ROOT-llvm20' }
-          # MacOS X86
-          - { name: osx26-x86-clang-llvm21-cppyy, os: macos-26-intel, compiler: clang, clang-runtime: '21', cppyy: On, flavor: system }
-          - { name: osx26-x86-clang-cling-llvm20-cppyy, os: macos-26-intel, compiler: clang, clang-runtime: '20', cling: 'On', cppyy: On, flavor: cling, flavor-version: 'ROOT-llvm20' }
-          # Windows
-          # No windows-11-arm row: x86 (win2025-msvc-llvm22) covers the
-          # same MSVC+LLVM22 surface, and the arm runner ships an x64
-          # MSVC environment by default. ci-workflows can publish arm64
-          # .libs once `arch: arm64` lands in install-build-deps and the
-          # poisoned arm64 cache entry is purged; restore the row then.
-          - { name: win2025-msvc-llvm22, os: windows-2025, compiler: msvc, clang-runtime: '22' }
-          - { name: win2025-msvc-cling-llvm20, os: windows-2025, compiler: msvc, clang-runtime: '20', cling: 'On', flavor: cling, flavor-version: 'ROOT-llvm20' }
+          - name: ubu24-x86-gcc12-clang-repl-21-asan
+            os: ubuntu-24.04
+            compiler: gcc-12
+            clang-runtime: '21'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            sanitizer: "Address"
+            python-version: '3.14'
+          - name: ubu24-x86-gcc12-clang-repl-21-cppyy
+            os: ubuntu-24.04
+            compiler: gcc-12
+            clang-runtime: '21'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          - name: ubu24-x86-gcc12-clang-repl-20-cppyy
+            os: ubuntu-24.04
+            compiler: gcc-12
+            clang-runtime: '20'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.13'
+          - name: ubu24-x86-gcc14-clang20-cling-cppyy
+            os: ubuntu-24.04
+            compiler: gcc-14
+            clang-runtime: '20'
+            cling: On
+            cppyy: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          # MacOS Arm Jobs
+          - name: osx26-arm-clang-clang-repl-22
+            os: macos-26
+            compiler: clang
+            clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.14'
+          - name: osx26-arm-clang-clang-repl-21-cppyy
+            os: macos-26
+            compiler: clang
+            clang-runtime: '21'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.14'
+          - name: osx26-arm-clang-clang-repl-20-cppyy
+            os: macos-26
+            compiler: clang
+            clang-runtime: '20'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.13'
+          - name: osx26-arm-clang-clang20-cling-cppyy
+            os: macos-26
+            compiler: clang
+            clang-runtime: '20'
+            cling: On
+            cppyy: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          # MacOS X86 Jobs
+          - name: osx26-x86-clang-clang-repl-22
+            os: macos-26-intel
+            compiler: clang
+            clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.14'
+          - name: osx26-x86-clang-clang-repl-21-cppyy
+            os: macos-26-intel
+            compiler: clang
+            clang-runtime: '21'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.14'
+          - name: osx26-x86-clang-clang-repl-20-cppyy
+            os: macos-26-intel
+            compiler: clang
+            clang-runtime: '20'
+            cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host"
+            python-version: '3.13'
+          - name: osx26-x86-clang-clang20-cling-cppyy
+            os: macos-26-intel
+            compiler: clang
+            clang-runtime: '20'
+            cling: On
+            cppyy: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          # Windows Arm Jobs
+          - name: win11-msvc-clang-repl-22
+            os: windows-11-arm
+            compiler: msvc
+            clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          - name: win11-msvc-clang20-cling
+            os: windows-11-arm
+            compiler: msvc
+            clang-runtime: '20'
+            cling: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          # Windows X86 Jobs
+          - name: win2025-msvc-clang-repl-22
+            os: windows-2025
+            compiler: msvc
+            clang-runtime: '22'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
+          - name: win2025-msvc-clang20-cling
+            os: windows-2025
+            compiler: msvc
+            clang-runtime: '20'
+            cling: On
+            cling-version: '1.3'
+            root-llvm-tag: 'cling-llvm20-20260119-01'
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
+            python-version: '3.14'
 
-    steps: &build_steps
+    steps:
     - uses: actions/checkout@v6
 
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.python-version || '3.14' }}
+        python-version: ${{ matrix.python-version }}
 
+    - name: Save PR Info
+      uses: ./.github/actions/Miscellaneous/Save_PR_Info
+
+    - name: Restore cached LLVM-${{ matrix.clang-runtime }} and ${{ matrix.cling == 'On' && 'Cling' || 'Clang-REPL' }} build
+      uses: actions/cache/restore@v4
+      id: cache
+      with:
+        path: |
+          llvm-project
+          ${{ matrix.cling=='On' && 'cling' || '' }}
+        key: ${{ env.CLING_HASH }}-${{ runner.os }}-${{ matrix.os }}-${{ matrix.compiler }}-clang-${{ matrix.clang-runtime }}-${{ matrix.root-llvm-tag || 'none' }}.x-patch-${{ hashFiles(format('patches/llvm/clang{0}-*.patch', matrix.clang-runtime)) || 'none' }}${{ matrix.oop-jit == 'On' && '-oop' || '' }}${{ matrix.sanitizer || '' }}
     - name: Setup default Build Type
       uses: ./.github/actions/Miscellaneous/Select_Default_Build_Type
 
     - name: Setup compiler
       uses: ./.github/actions/Miscellaneous/Setup_Compiler
-      with:
-        compiler: ${{ matrix.compiler }}
 
     - name: Install dependencies
       uses: ./.github/actions/Miscellaneous/Install_Dependencies
 
-    # One step replaces the old Restore-cache + Build_LLVM +
-    # Setup-recipe + cling-on-top + Save-cache trio. flavor selects
-    # the source: '' = llvm-release recipe (latest LLVM from
-    # compiler-research/ci-workflows' Releases cache); 'system' =
-    # apt-llvm.org or brew llvm@N for older majors the package
-    # manager already ships; 'asan' = llvm-asan recipe; 'msan' =
-    # llvm-msan recipe (Linux x86_64 only, bundled libc++); 'cling' =
-    # llvm-root recipe + cling built on top inside the action.
-    # `os:` reads matrix.self-hosted-os first so the self-hosted CUDA
-    # row (whose matrix.os is the runs-on label array
-    # `[self-hosted, cuda, heavy]`) can supply a string slug for
-    # setup-llvm's string-typed input. Hosted-runner rows leave
-    # self-hosted-os unset and fall through to matrix.os, which is
-    # already a string for them.
-    - name: Setup LLVM ${{ matrix.clang-runtime }}${{ matrix.flavor && format(' [{0}]', matrix.flavor) || '' }}
-      uses: compiler-research/ci-workflows/actions/setup-llvm@main
+    - name: Build LLVM-${{ matrix.clang-runtime }} and ${{ matrix.cling == 'On' && 'Cling' || 'Clang-REPL' }}
+      uses: ./.github/actions/Build_LLVM
       with:
-        version:        ${{ matrix.clang-runtime }}
-        os:             ${{ matrix.self-hosted-os || matrix.os }}
-        flavor:         ${{ matrix.flavor }}
-        flavor-version: ${{ matrix.flavor-version }}
+        cache-hit: ${{ steps.cache.outputs.cache-hit }}
+
+    - name: Cache LLVM-${{ matrix.clang-runtime }} and ${{ matrix.cling == 'On' && 'Cling' || 'Clang-REPL' }} build
+      uses: actions/cache/save@v4
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      with:
+        path: |
+          llvm-project
+          ${{ matrix.cling=='On' && 'cling' || '' }}
+        key: ${{ steps.cache.outputs.cache-primary-key }}
 
     - name: Setup code coverage
       if: ${{ success() && (matrix.coverage == true) }}
@@ -118,12 +259,6 @@ jobs:
 
     - name: Build and test CppInterOp
       uses: ./.github/actions/Build_and_Test_CppInterOp
-      with:
-        cling: ${{ matrix.cling }}
-        clang_runtime: ${{ matrix.clang-runtime }}
-        documentation: ${{ matrix.documentation }}
-        sanitizer: ${{ matrix.sanitizer }}
-        valgrind: ${{ matrix.Valgrind }}
 
     - name: Prepare code coverage report
       if: ${{ success() && (matrix.coverage == true) }}
@@ -132,7 +267,7 @@ jobs:
         # capture coverage info
         vers="${CC#*-}"
         lcov --directory build/ --capture --output-file coverage.info --gcov-tool /usr/bin/gcov-${vers}
-        lcov --remove coverage.info '/usr/*' ${{ github.workspace }}'/install/*' --ignore-errors unused --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' ${{ github.workspace }}'/llvm-project/*' --ignore-errors unused --output-file coverage.info
         lcov --remove coverage.info '${{ github.workspace }}/unittests/*' --ignore-errors unused --output-file coverage.info
         lcov --remove coverage.info  '${{ github.workspace }}/build/*' --ignore-errors unused --output-file coverage.info
         # output coverage data for debugging (optional)
@@ -149,35 +284,13 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Build and test cppyy
-      uses: ./.github/actions/Build_and_Test_cppyy
-      with:
-        cppyy: ${{ matrix.cppyy }}
-        cling: ${{ matrix.cling }}
-        valgrind: ${{ matrix.Valgrind }}
-        clang_runtime: ${{ matrix.clang-runtime }}
+      uses: ./.github/actions/Build_and_Test_cppyy        
 
     - name: Show debug info
       if: ${{ failure() }}
-      shell: bash
-      env:
-        REPO: ${{ github.repository }}
-        REPO_NAME: ${{ github.event.repository.name }}
-        SHA: ${{ github.sha }}
-        ROW: ${{ matrix.name }}
       run: |
-        echo "::group::Reproduce this failure locally (requires Docker + nektos/act)"
-        cat <<EOF
-            git clone https://github.com/compiler-research/ci-workflows.git
-            git clone https://github.com/$REPO.git
-            cd $REPO_NAME
-            git checkout $SHA
-            ../ci-workflows/bin/repro $ROW
-        EOF
-        echo "::endgroup::"
-        echo "::group::Environment"
         export
-        echo "$GITHUB_ENV"
-        echo "::endgroup::"
+        echo $GITHUB_ENV
 
     - name: Setup tmate session
       if: ${{ failure() && runner.debug }}
@@ -185,37 +298,6 @@ jobs:
       # When debugging increase to a suitable value!
       timeout-minutes: 30
 
-  # The dell sleeps between runs; wake it before build-selfhost
-  # dispatches to it.
-  prepare-dell:
-    runs-on: [self-hosted, spotter]
-    steps:
-      - uses: compiler-research/ci-workflows/actions/wake-on-lan@main
-        with:
-          mac: a4:bb:6d:51:d5:d2
-          target-host: 192.168.100.30
 
-  build-selfhost:
-    needs: prepare-dell
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Self-hosted runs ubuntu-22.04 (jammy); no llvm-release cell
-          # for that runner image. flavor: system pulls from
-          # apt-llvm.org, which mirrors what the old in-line
-          # `Install LLVM-N dependencies on self-hosted` block did.
-          # self-hosted-os is the string slug setup-llvm needs for
-          # downstream cache-key purposes; matrix.os here is an array
-          # (the runs-on label set), and arrays can't flow into
-          # string-typed action inputs.
-          - name: selfh-ubu22-x86-gcc12-llvm22-cuda
-            os: [self-hosted, cuda, heavy]
-            self-hosted-os: ubuntu-22.04
-            compiler: gcc-12
-            clang-runtime: '22'
-            flavor: system
-            coverage: true
-    steps: *build_steps
+
+

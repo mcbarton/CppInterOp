@@ -1,17 +1,6 @@
 name: 'Setup Compiler'
 description: 'This PR sets up the compiler for the job'
 
-# `${{ matrix.* }}` is reliably available inside composite-action steps
-# only on github-hosted runners; nektos/act does not propagate the
-# caller's matrix context, so every `${{ matrix.compiler }}` below
-# expanded to "" -- the gcc branch was skipped, vers was "", and CXX
-# came out as "clang++-" with no version. Forward the value via an
-# explicit input so behaviour matches across both runtimes.
-inputs:
-  compiler:
-    required: true
-    description: 'Compiler slug, e.g. "gcc-14", "clang-22", "msvc". Forwarded from matrix.compiler at the call site.'
-
 runs:
   using: composite
   steps:
@@ -21,7 +10,7 @@ runs:
       shell: bash
       run: |
         vers="${compiler#*-}"
-        if [[ "${compiler}" == *"gcc"* ]]; then
+        if [[ "${{ matrix.compiler }}" == *"gcc"* ]]; then
           brew install "gcc@$vers"
           echo "CC=gcc-${vers}" >> $GITHUB_ENV
           echo "CXX=g++-${vers}" >> $GITHUB_ENV
@@ -37,7 +26,7 @@ runs:
         fi
         echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_ENV
       env:
-        compiler: ${{ inputs.compiler }}
+        compiler: ${{ matrix.compiler }}
 
     - name: Setup Compiler on Linux
       if: runner.os == 'Linux'
@@ -47,7 +36,7 @@ runs:
         vers="${compiler#*-}"
         os_codename="`cat /etc/os-release | grep UBUNTU_CODENAME | cut -d = -f 2`"
         sudo apt-get update
-        if [[ "${compiler}" == *"gcc"* ]]; then
+        if [[ "${{ matrix.compiler }}" == *"gcc"* ]]; then
           sudo apt-get install -y gcc-${vers} g++-${vers} lld
           echo "CC=gcc-${vers}" >> $GITHUB_ENV
           echo "CXX=g++-${vers}" >> $GITHUB_ENV
@@ -62,17 +51,15 @@ runs:
           echo "CXX=clang++-${vers}" >> $GITHUB_ENV
         fi
       env:
-        compiler: ${{ inputs.compiler }}
+        compiler: ${{ matrix.compiler }}
 
     - name: Save Compiler on Windows Systems
       if: runner.os == 'Windows'
       shell: powershell
-      env:
-        compiler: ${{ inputs.compiler }}
       run: |
-        if ( "$env:compiler" -imatch "clang" )
+        if ( "${{ matrix.compiler }}" -imatch "clang" )
         {
-          $ver="$env:compiler".split("-")[1]
+          $ver="${{ matrix.compiler }}".split("-")[1]
           choco install llvm --version=$ver --no-progress -my
           clang --version
           #
@@ -81,7 +68,7 @@ runs:
           echo "CC=clang" >> $env:GITHUB_ENV
           echo "CXX=clang++" >> $env:GITHUB_ENV
         }
-        elseif ( "$env:compiler" -imatch "msvc" )
+        elseif ( "${{ matrix.compiler }}" -imatch "msvc" )
         {
           # MSVC is builtin in container image
         }

@@ -29,22 +29,17 @@ runs:
     - name: Install dependencies on Linux
       if: runner.os == 'Linux'
       shell: bash
-      env:
-        DEBIAN_FRONTEND: noninteractive
       run: |
-        # One install call (one lock acquire, one resolve, one dpkg
-        # trigger sweep) instead of four. --no-install-recommends to
-        # skip the "suggests" closure (~30-60% smaller download).
-        # cmake is preinstalled on github-hosted runners but absent
-        # from nektos/act's lean act-XX.04 image, so list it
-        # explicitly -- a no-op on github-hosted, makes act work.
-        sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends \
-          cmake ninja-build g++ git python3 ccache \
-          valgrind libc6-dbg \
-          libeigen3-dev libboost-dev \
-          libedit-dev
-        sudo apt-get clean
+        # Install deps
+        sudo apt-get update
+        sudo apt-get install valgrind ninja-build
+        sudo apt-get install git g++ debhelper devscripts gnupg python3 doxygen graphviz python3-sphinx
+        sudo apt-get install -y libc6-dbg
+        sudo apt autoremove
+        sudo apt clean
+        # Install libraries used by the cppyy test suite
+        sudo apt install libeigen3-dev
+        sudo apt install libboost-all-dev
 
 
     - name: Install dependencies on Windows
@@ -53,3 +48,4 @@ runs:
       run: |
         choco install findutils
         $env:PATH="C:\Program Files (x86)\GnuWin32\bin;$env:PATH"
+        

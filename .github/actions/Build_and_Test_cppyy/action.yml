@@ -1,39 +1,15 @@
 name: 'Builds and test cppyy'
 description: 'This action builds and tests cppyy for native platforms'
 
-# `${{ matrix.* }}` is reliably available inside composite-action steps
-# only on github-hosted runners; nektos/act does not propagate the
-# caller's matrix context, so every `${{ matrix.cppyy }}` in step
-# `if:` keys expands to "" -- evaluating to `'' == 'On' && ...` ->
-# false, every step is skipped, and the action runs in 200ms doing
-# nothing. Forward each matrix value via explicit inputs so the
-# behaviour matches across both runtimes.
-inputs:
-  cppyy:
-    required: true
-    description: 'Forward of matrix.cppyy ("On"/"Off"). Drives every step gate in this action.'
-  cling:
-    required: false
-    default: ''
-    description: 'Forward of matrix.cling ("On"/"Off"). Selects valgrind suppressions.'
-  valgrind:
-    required: false
-    default: ''
-    description: 'Forward of matrix.Valgrind ("On"/"Off"). Gates the valgrind test pass.'
-  clang_runtime:
-    required: false
-    default: ''
-    description: 'Forward of matrix.clang-runtime (numeric LLVM major). Selects valgrind suppression file.'
-
 runs:
   using: composite
   steps:
     - name: Build and Install cppyy-backend
-      if: ${{ inputs.cppyy == 'On' && runner.os != 'Windows' }}
+      if: ${{ matrix.cppyy == 'On' && runner.os != 'Windows' }}
       shell: bash
       run: |
         # Download cppyy-backend
-        git clone --depth=1 https://github.com/compiler-research/cppyy-backend.git
+        git clone --depth=1 https://github.com/mcbarton/cppyy-backend.git
         cd cppyy-backend
         mkdir -p $CPPINTEROP_DIR/lib build && cd build
         # Install CppInterOp
@@ -41,7 +17,8 @@ runs:
         # Build and Install cppyy-backend
         cmake -DCppInterOp_DIR=$CPPINTEROP_DIR ..
         cmake --build . --parallel ${{ env.ncpus }}
-        if [[ "${{ runner.os }}" == "macOS" ]]; then
+        os="${{ matrix.os }}"
+        if [[ "${os}" == "macos"* ]]; then
           cp libcppyy-backend.dylib $CPPINTEROP_DIR/lib/
         else
           cp libcppyy-backend.so $CPPINTEROP_DIR/lib/
@@ -49,13 +26,13 @@ runs:
         cd ..
 
     - name: Install CPyCppyy
-      if: ${{ inputs.cppyy == 'On' && runner.os != 'Windows' }}
+      if: ${{ matrix.cppyy == 'On' && runner.os != 'Windows' }}
       shell: bash
       run: |
         python3 -m venv .venv
         source .venv/bin/activate
         # Install CPyCppyy
-        git clone --depth=1 https://github.com/compiler-research/CPyCppyy.git
+        git clone --depth=1 https://github.com/mcbarton/CPyCppyy.git
         mkdir CPyCppyy/build
         cd CPyCppyy/build
         cmake ..
@@ -67,20 +44,20 @@ runs:
         echo "CPYCPPYY_DIR=$CPYCPPYY_DIR" >> $GITHUB_ENV
 
     - name: Install cppyy
-      if: ${{ inputs.cppyy == 'On' && runner.os != 'Windows' }}
+      if: ${{ matrix.cppyy == 'On' && runner.os != 'Windows' }}
       shell: bash
       run: |
         # source virtual environment
         source .venv/bin/activate
         # Install cppyy
-        git clone --depth=1 https://github.com/compiler-research/cppyy.git
+        git clone --depth=1 https://github.com/mcbarton/cppyy.git
         cd cppyy
         python -m pip install uv
         python -m pip install --upgrade . --no-deps
         cd ..
 
     - name: Run cppyy
-      if: ${{ inputs.cppyy == 'On' && runner.os != 'Windows' }}
+      if: ${{ matrix.cppyy == 'On' && runner.os != 'Windows' }}
       shell: bash
       run: |
         # Run cppyy
@@ -91,7 +68,7 @@ runs:
         echo "PYTHONPATH=$PYTHONPATH" >> $GITHUB_ENV
 
     - name: Run the tests
-      if: ${{ inputs.cppyy == 'On' && runner.os != 'Windows' }}
+      if: ${{ matrix.cppyy == 'On' && runner.os != 'Windows' }}
       shell: bash
       run: |
         # Run the tests
@@ -102,11 +79,7 @@ runs:
         python -m pip install --upgrade pip
         python -m pip install pytest
         python -m pip install pytest-xdist
-        # Detect the interpreter actually in use rather than matrix.python-version:
-        # the latter is empty when the row inherits the workflow default, and numba
-        # 0.61.2 refuses to build on Python >= 3.14.
-        py_ver=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-        if [[ "$py_ver" != "3.14" ]]; then
+        if [[ "${{ matrix.python-version }}" != "3.14" ]]; then
           python -m uv pip install numba==0.61.2
         fi
         echo ::endgroup::
@@ -135,36 +108,24 @@ runs:
         declare -i RETCODE=0
 
         set -o pipefail
-        if [[ "${{ runner.os }}" != "macOS" && "${{ inputs.valgrind }}" == "On" ]]; then
+        os="${{ matrix.os }}"
+        if [[ "${os}" != "macos"* && "${{ matrix.Valgrind }}" == "On" ]]; then
           echo "Running valgrind on passing tests"
-          CLANG_VERSION="${{ inputs.clang_runtime }}"
+          CLANG_VERSION="${{ matrix.clang-runtime }}"
 
-          if [[ "${{ inputs.cling }}" == "On" ]]; then
+          if [[ "${{ matrix.cling }}" == "On" ]]; then
             CLANG_INTERPRETER="cling"
           else
             CLANG_INTERPRETER="clang"
           fi
-
-          if [[ "${{ runner.arch }}" == "ARM64" ]]; then
+        
+          if [[ "${{ matrix.os }}" == *"arm"* ]]; then
             SUPPRESSION_FILE="../etc/${CLANG_INTERPRETER}${CLANG_VERSION}-valgrind_arm.supp"
           else
             SUPPRESSION_FILE="../etc/${CLANG_INTERPRETER}${CLANG_VERSION}-valgrind.supp"
           fi
-          # CppInterOp's per-major valgrind supp file (the one
-          # Build_and_Test_CppInterOp loads) covers the post-recipe
-          # #194147 expansion -- the cppyy-side supp file in
-          # cppyy/etc/ is owned by a different repo and lags. Stack
-          # both via repeated --suppressions= flags so the cppyy
-          # valgrind run inherits the same coverage CppInterOp's own
-          # tests get without a cross-repo PR.
-          CPPINTEROP_SUPP="${GITHUB_WORKSPACE}/etc/clang${CLANG_VERSION}-valgrind.supp"
-          if [[ -f "${CPPINTEROP_SUPP}" ]]; then
-            EXTRA_SUPP=(--suppressions="${CPPINTEROP_SUPP}")
-          else
-            EXTRA_SUPP=()
-          fi
           export IS_VALGRIND=true
-          valgrind --show-error-list=yes --error-exitcode=1 --track-origins=yes --gen-suppressions=all --suppressions="${SUPPRESSION_FILE}" --suppressions=../etc/valgrind-cppyy-cling.supp "${EXTRA_SUPP[@]}" python -m pytest -m "not xfail" -sv -ra --ignore=test_leakcheck.py
+          valgrind --show-error-list=yes --error-exitcode=1 --track-origins=yes --gen-suppressions=all --suppressions="${SUPPRESSION_FILE}" --suppressions=../etc/valgrind-cppyy-cling.supp python -m pytest -m "not xfail" -sv -ra --ignore=test_leakcheck.py
           unset IS_VALGRIND
         fi
         export RETCODE=+$?

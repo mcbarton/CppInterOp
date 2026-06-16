@@ -13,10 +13,6 @@ permissions:
   pages: write
   id-token: write
 
-env:
-  EMSDK_VER: "4.0.9"
-  BUILD_STATIC_LIBRARY: Off
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -24,9 +20,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # arch + wasm shape mirror emscripten.yml's matrix (see comment there).
         include:
-          - { name: osx26-arm-emscr-llvm22, os: macos-26, arch: arm64, clang-runtime: '22', wasm: 'true' }
+          - name: osx26-arm-clang-repl-22-emscripten
+            os: macos-26
+            clang-runtime: '22'
+            micromamba_shell_init: bash
+            emsdk_ver: "4.0.9"
+            build_static_library: Off
 
     steps:
     - uses: actions/checkout@v6
@@ -46,37 +46,34 @@ jobs:
       uses: mamba-org/setup-micromamba@main
       with:
         init-shell: >-
-          ${{ runner.os == 'Windows' && 'powershell' || 'bash' }}
+          ${{ matrix.micromamba_shell_init }}
 
     - name: Setup emsdk
       shell: bash -l {0}
       run: |
           git clone --depth=1 https://github.com/emscripten-core/emsdk.git
           cd emsdk
-          ./emsdk install  ${{ env.EMSDK_VER }}
+          ./emsdk install  ${{ matrix.emsdk_ver }}
 
-    # Same wasm-cell consumer step as emscripten.yml.
-    - name: Setup llvm-wasm cell
-      uses: compiler-research/ci-workflows/actions/setup-recipe@main
+    - name: Restore cached LLVM-${{ matrix.clang-runtime }} and ${{ matrix.cling == 'On' && 'Cling' || 'Clang-REPL' }} build
+      uses: actions/cache/restore@v4
+      id: cache
       with:
-        recipe: llvm-wasm
-        version: ${{ matrix.clang-runtime }}
-        os: ${{ matrix.os }}
-        arch: ${{ matrix.arch }}
+        path: |
+          llvm-project
+          ${{ matrix.cling=='On' && 'cling' || '' }}
+        key: ${{ env.CLING_HASH }}-${{ runner.os }}-${{ matrix.os }}-clang-${{ matrix.clang-runtime }}.x-emscripten
 
     - name: Build and test CppInterOp
       uses: ./.github/actions/Build_and_Test_CppInterOp
-      with:
-        clang_runtime: ${{ matrix.clang-runtime }}
-        wasm: ${{ matrix.wasm }}
 
     - name: Build xeus-cpp
       shell: bash -l {0}
       run: |
-        ./emsdk/emsdk activate ${{ env.EMSDK_VER }}
+        ./emsdk/emsdk activate ${{matrix.emsdk_ver}}
         source ./emsdk/emsdk_env.sh
         micromamba activate CppInterOp-wasm
-        git clone --depth=1 https://github.com/compiler-research/xeus-cpp.git
+        git clone --depth=1 https://github.com/mcbarton/xeus-cpp.git
         cd ./xeus-cpp
         mkdir build
         pushd build
