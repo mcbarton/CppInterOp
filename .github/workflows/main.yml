@@ -23,32 +23,32 @@ jobs:
       matrix:
         include:
           # Ubuntu Arm Jobs
-          - name: ubu24-arm-gcc12-clang-repl-22
-            os: ubuntu-24.04-arm
+          - name: ubu26-arm-gcc12-clang-repl-22
+            os: ubuntu-26.04-arm
             compiler: gcc-12
             clang-runtime: '22'
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             Valgrind: On
             python-version: '3.14'
-          - name: ubu24-arm-gcc12-clang-repl-21-cppyy
-            os: ubuntu-24.04-arm
+          - name: ubu26-arm-gcc12-clang-repl-21-cppyy
+            os: ubuntu-26.04-arm
             compiler: gcc-12
             clang-runtime: '21'
             cppyy: On
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.14'
-          - name: ubu24-arm-gcc12-clang-repl-20-cppyy
-            os: ubuntu-24.04-arm
+          - name: ubu26-arm-gcc12-clang-repl-20-cppyy
+            os: ubuntu-26.04-arm
             compiler: gcc-12
             clang-runtime: '20'
             cppyy: On
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.13'
-          - name: ubu24-arm-gcc14-clang20-cling-cppyy
-            os: ubuntu-24.04-arm
+          - name: ubu26-arm-gcc14-clang20-cling-cppyy
+            os: ubuntu-26.04-arm
             compiler: gcc-14
             clang-runtime: '20'
             cling: On
@@ -59,39 +59,39 @@ jobs:
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.14'
           # Ubuntu X86 Jobs
-          - name: ubu24-x86-gcc12-clang-repl-22
-            os: ubuntu-24.04
+          - name: ubu26-x86-gcc12-clang-repl-22
+            os: ubuntu-26.04
             compiler: gcc-12
             clang-runtime: '22'
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             Valgrind: On
-          - name: ubu24-x86-gcc12-clang-repl-21-asan
-            os: ubuntu-24.04
+          - name: ubu26-x86-gcc12-clang-repl-21-asan
+            os: ubuntu-26.04
             compiler: gcc-12
             clang-runtime: '21'
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             sanitizer: "Address"
             python-version: '3.14'
-          - name: ubu24-x86-gcc12-clang-repl-21-cppyy
-            os: ubuntu-24.04
+          - name: ubu26-x86-gcc12-clang-repl-21-cppyy
+            os: ubuntu-26.04
             compiler: gcc-12
             clang-runtime: '21'
             cppyy: On
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.14'
-          - name: ubu24-x86-gcc12-clang-repl-20-cppyy
-            os: ubuntu-24.04
+          - name: ubu26-x86-gcc12-clang-repl-20-cppyy
+            os: ubuntu-26.04
             compiler: gcc-12
             clang-runtime: '20'
             cppyy: On
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.13'
-          - name: ubu24-x86-gcc14-clang20-cling-cppyy
-            os: ubuntu-24.04
+          - name: ubu26-x86-gcc14-clang20-cling-cppyy
+            os: ubuntu-26.04
             compiler: gcc-14
             clang-runtime: '20'
             cling: On
