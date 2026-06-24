@@ -47,7 +47,7 @@ jobs:
             build_static_library: ${{ github.event_name == 'schedule' && 'On' || 'Off' }}
             micromamba_shell_init: bash
           - name: win2025-x86-clang-repl-22-emscripten
-            os: windows-2025
+            os: windows-2025-vs2026
             clang-runtime: '22'
             llvm_enable_projects: "clang;lld"
             llvm_targets_to_build: "WebAssembly"
