@@ -173,14 +173,14 @@ jobs:
             python-version: '3.14'
           # Windows Arm Jobs
           - name: win11-msvc-clang-repl-22
-            os: windows-11-arm
+            os: windows-11-vs2026-arm
             compiler: msvc
             clang-runtime: '22'
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.14'
           - name: win11-msvc-clang20-cling
-            os: windows-11-arm
+            os: windows-11-vs2026-arm
             compiler: msvc
             clang-runtime: '20'
             cling: On
@@ -191,14 +191,14 @@ jobs:
             python-version: '3.14'
           # Windows X86 Jobs
           - name: win2025-msvc-clang-repl-22
-            os: windows-2025
+            os: windows-2025-vs2026
             compiler: msvc
             clang-runtime: '22'
             llvm_enable_projects: "clang"
             llvm_targets_to_build: "host;NVPTX"
             python-version: '3.14'
           - name: win2025-msvc-clang20-cling
-            os: windows-2025
+            os: windows-2025-vs2026
             compiler: msvc
             clang-runtime: '20'
             cling: On
