@@ -2900,14 +2900,9 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
 
   testing::internal::CaptureStdout();
 
-  std::cerr << "Before Destruct(withFree=true)\n";
-
   EXPECT_TRUE(Cpp::Destruct(where, scope, true, a));
 
   output = testing::internal::GetCapturedStdout();
-
-  std::cerr << "After GetCapturedStdout(): size=" << output.size()
-            << " output=[" << output << "]\n";
 
   EXPECT_EQ(output,
             "\nDestructor Executed\n\nDestructor Executed\n\nDestructor "
