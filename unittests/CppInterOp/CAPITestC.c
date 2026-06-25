@@ -16,16 +16,17 @@
  */
 static void test_types(void) {
   CppInterOpArray arr;
+  CppInterOpStringArray sarr;
+  TemplateArgInfo tai;
+
   arr.data = (void**)0;
   arr.size = 0;
   (void)arr;
 
-  CppInterOpStringArray sarr;
   sarr.data = (char**)0;
   sarr.size = 0;
   (void)sarr;
 
-  TemplateArgInfo tai;
   tai.m_Type = (void*)0;
   tai.m_IntegralValue = (const char*)0;
   (void)tai;
@@ -35,6 +36,9 @@ static void test_types(void) {
  * are valid C symbols. The full set is already compiled above; these
  * confirm linkability at the object level.
  */
+
+int capi_c_test_main(void);
+
 int capi_c_test_main(void) {
   test_types();
   (void)&cppinterop_CreateInterpreter;
