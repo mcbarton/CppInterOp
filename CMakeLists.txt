@@ -457,7 +457,6 @@ endif ()
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
   # Required for clang::driver::options::OPT_ see https://github.com/llvm/llvm-project/issues/86028
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:preprocessor")
 endif ()
 
 if (APPLE)
