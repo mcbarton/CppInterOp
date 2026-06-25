@@ -2871,9 +2871,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
 
   output = testing::internal::GetCapturedStdout();
 
-  std::cerr << "After first Destruct(): size=" << output.size()
-            << " output=[" << output << "]\n";
-
   EXPECT_EQ(
       output,
       "\nDestructor Executed\n\nDestructor Executed\n\nDestructor Executed\n");
@@ -2888,9 +2885,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
   EXPECT_TRUE(Cpp::Destruct(new_head, scope, false, 2));
 
   output = testing::internal::GetCapturedStdout();
-
-  std::cerr << "After second Destruct(): size=" << output.size()
-            << " output=[" << output << "]\n";
 
   EXPECT_EQ(output, "\nDestructor Executed\n\nDestructor Executed\n");
 
@@ -2909,8 +2903,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
   std::cerr << "Before Destruct(withFree=true)\n";
 
   EXPECT_TRUE(Cpp::Destruct(where, scope, true, a));
-
-  std::cerr << "After Destruct(withFree=true)\n";
 
   output = testing::internal::GetCapturedStdout();
 
