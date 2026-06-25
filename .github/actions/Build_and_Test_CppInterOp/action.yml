@@ -142,7 +142,7 @@ runs:
         {
           cmake -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}    `
                 -DLLVM_DIR="$env:LLVM_BUILD_DIR\lib\cmake\llvm"  `
-                -DLLVM_ENABLE_WERROR=On                          `
+                -DLLVM_ENABLE_WERROR=On   -DCMAKE_ASM_MASM_FLAGS="-m64" -DCMAKE_ASM_MASM_COMPILER=llvm-ml   -DCMAKE_C_COMPILER=clang-cl  -DCMAKE_CXX_COMPILER=clang-cl                          `
                 -DClang_DIR="$env:LLVM_BUILD_DIR\lib\cmake\clang"  -DCODE_COVERAGE=${{ env.CODE_COVERAGE }}  -DCMAKE_INSTALL_PREFIX="$env:CPPINTEROP_DIR"  ..\
         }
         cmake --build . --config ${{ env.BUILD_TYPE }} --target check-cppinterop --parallel ${{ env.ncpus }}
