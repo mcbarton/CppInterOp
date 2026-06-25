@@ -2834,15 +2834,20 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
 
   Interp->declare(R"(
       #include <new>
+      #include <stdio.h>
+
       extern "C" int printf(const char*,...);
+
       class C {
         int x;
         C() {
           printf("\nCtor Executed\n");
+          fflush(stdout);
           x = 42;
         }
         ~C() {
           printf("\nDestructor Executed\n");
+          fflush(stdout);
         }
       };
       )");
@@ -2860,23 +2865,35 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
   EXPECT_TRUE(*obj == 42);
 
   testing::internal::CaptureStdout();
+
   // destruct 3 out of 5 objects
   EXPECT_TRUE(Cpp::Destruct(where, scope, false, 3));
+
   output = testing::internal::GetCapturedStdout();
+
+  std::cerr << "After first Destruct(): size=" << output.size()
+            << " output=[" << output << "]\n";
 
   EXPECT_EQ(
       output,
       "\nDestructor Executed\n\nDestructor Executed\n\nDestructor Executed\n");
+
   output.clear();
   testing::internal::CaptureStdout();
 
   // destruct the rest
-  auto *new_head = reinterpret_cast<void*>(reinterpret_cast<char*>(where) +
-                                          (Cpp::SizeOf(scope) * 3));
+  auto* new_head = reinterpret_cast<void*>(
+      reinterpret_cast<char*>(where) + (Cpp::SizeOf(scope) * 3));
+
   EXPECT_TRUE(Cpp::Destruct(new_head, scope, false, 2));
 
   output = testing::internal::GetCapturedStdout();
+
+  std::cerr << "After second Destruct(): size=" << output.size()
+            << " output=[" << output << "]\n";
+
   EXPECT_EQ(output, "\nDestructor Executed\n\nDestructor Executed\n");
+
   output.clear();
 
   // deallocate since we call the destructor withFree = false
@@ -2886,12 +2903,24 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_DestructArray) {
   where = nullptr;
   where = Cpp::Construct(scope, nullptr, a).data;
   EXPECT_TRUE(where);
+
   testing::internal::CaptureStdout();
+
+  std::cerr << "Before Destruct(withFree=true)\n";
+
   EXPECT_TRUE(Cpp::Destruct(where, scope, true, a));
+
+  std::cerr << "After Destruct(withFree=true)\n";
+
   output = testing::internal::GetCapturedStdout();
+
+  std::cerr << "After GetCapturedStdout(): size=" << output.size()
+            << " output=[" << output << "]\n";
+
   EXPECT_EQ(output,
             "\nDestructor Executed\n\nDestructor Executed\n\nDestructor "
             "Executed\n\nDestructor Executed\n\nDestructor Executed\n");
+
   output.clear();
 }
 
