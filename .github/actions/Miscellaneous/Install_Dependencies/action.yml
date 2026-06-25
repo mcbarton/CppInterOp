@@ -46,6 +46,6 @@ runs:
       if: runner.os == 'Windows'
       shell: powershell
       run: |
-        choco install findutils
+        choco install findutils ninja
         $env:PATH="C:\Program Files (x86)\GnuWin32\bin;$env:PATH"
-        
+        $env:PATH="C:\Program Files (x86)\Ninja\bin;$env:PATH"        

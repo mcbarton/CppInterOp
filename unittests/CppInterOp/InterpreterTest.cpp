@@ -74,9 +74,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
 #endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
   //  EXPECT_TRUE(Cpp::Evaluate(I, "") == 0);
@@ -113,9 +110,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate) {
 TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate_Copy) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
-#endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
 #endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
@@ -201,9 +195,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate_VisitDispatch) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
 #endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
   TestFixture::CreateInterpreter();
@@ -239,9 +230,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate_AllFundamentals) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
 #endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
   TestFixture::CreateInterpreter();
@@ -276,9 +264,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate_AllFundamentals) {
 TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Evaluate_NonValueStatement) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
-#endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
 #endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
@@ -408,9 +393,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_Process) {
 #ifdef EMSCRIPTEN_STATIC_LIBRARY
   GTEST_SKIP() << "Test fails for Emscipten static library build";
 #endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
   std::vector<const char*> interpreter_args = { "-include", "new", "-Xclang", "-iwithsysroot/include/compat" };
@@ -521,9 +503,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_DetectResourceDir) {
 #else
 TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_DISABLED_DetectResourceDir) {
 #endif // LLVM_BINARY_DIR
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   TestFixture::CreateInterpreter();
   EXPECT_STRNE(Cpp::DetectResourceDir().c_str(), Cpp::GetResourceDir());
   llvm::SmallString<256> Clang(LLVM_BINARY_DIR);
@@ -543,9 +522,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_DISABLED_DetectResourceDir) {
 TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_DetectSystemCompilerIncludePaths) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
-#endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
 #endif
   std::vector<std::string> includes;
   Cpp::DetectSystemCompilerIncludePaths(includes);
@@ -579,10 +555,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_IncludePaths) {
 }
 
 TYPED_TEST(CPPINTEROP_TEST_MODE, Interpreter_CodeCompletion) {
-#if CLANG_VERSION_MAJOR == 20 && defined(CPPINTEROP_USE_CLING) &&              \
-    defined(_WIN32)
-  GTEST_SKIP() << "Test fails with Cling on Windows";
-#endif
   TestFixture::CreateInterpreter();
   std::vector<std::string> cc;
   Cpp::Declare("int foo = 12;");

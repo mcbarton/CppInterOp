@@ -114,7 +114,7 @@ runs:
         if ( "${{ matrix.cling }}" -imatch "On" )
         {
           cd build
-          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}" `
+          cmake -G Ninja -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}" `
                 -DLLVM_EXTERNAL_PROJECTS=cling                `
                 -DLLVM_EXTERNAL_CLING_SOURCE_DIR="$env:CLING_DIR"   `
                 -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}" `
@@ -133,7 +133,7 @@ runs:
         {
           cd build
           echo "Apply clang${{ matrix.clang-runtime }}-*.patch patches:"
-          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}"                   `
+          cmake -G Ninja -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}"                   `
                 -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}"          `
                 -DCMAKE_BUILD_TYPE=Release                          `
                 -DLLVM_ENABLE_ASSERTIONS=ON                         `

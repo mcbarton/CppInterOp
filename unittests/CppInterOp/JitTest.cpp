@@ -15,9 +15,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Jit_InsertOrReplaceJitSymbol) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
 #endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
-#endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
   std::vector<Decl*> Decls;
@@ -76,9 +73,6 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, Jit_StreamRedirect) {
 TYPED_TEST(CPPINTEROP_TEST_MODE, Jit_StreamRedirectJIT) {
 #ifdef EMSCRIPTEN
   GTEST_SKIP() << "Test fails for Emscipten builds";
-#endif
-#ifdef _WIN32
-  GTEST_SKIP() << "Disabled on Windows. Needs fixing.";
 #endif
 #ifdef CPPINTEROP_USE_CLING
   GTEST_SKIP() << "Test fails for cling builds";
