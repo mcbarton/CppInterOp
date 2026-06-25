@@ -240,6 +240,13 @@ jobs:
     - name: Build and test CppInterOp
       uses: ./.github/actions/Build_and_Test_CppInterOp
 
+    - name: Show googletest configure log
+      if: always()
+      shell: powershell
+      run: |
+        Get-ChildItem "C:\a\CppInterOp\CppInterOp\build\unittests\googletest-prefix\src\googletest-stamp"
+        Get-Content "C:\a\CppInterOp\CppInterOp\build\unittests\googletest-prefix\src\googletest-stamp\googletest-configure-Release-*.log"
+    
     - name: Prepare code coverage report
       if: ${{ success() && (matrix.coverage == true) }}
       run: |
