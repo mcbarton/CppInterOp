@@ -63,10 +63,10 @@ runs:
           choco install llvm --version=$ver --no-progress -my
           clang --version
           #
-          $env:CC="clang"
-          $env:CXX="clang++"
-          echo "CC=clang" >> $env:GITHUB_ENV
-          echo "CXX=clang++" >> $env:GITHUB_ENV
+          $env:CC="clang-cl"
+          $env:CXX="clang-cl"
+          echo "CC=clang-cl" >> $env:GITHUB_ENV
+          echo "CXX=clang-cl" >> $env:GITHUB_ENV
         }
         elseif ( "${{ matrix.compiler }}" -imatch "msvc" )
         {
