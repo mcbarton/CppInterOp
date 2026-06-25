@@ -448,6 +448,8 @@ struct ReproBuffer {
     OS << "?";
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmicrosoft-cast"
   /// Format a comma-separated argument list. Pointer-container OUTs
   /// emit `_outN` (next index from \p OutIndices); scalar pointer OUTs
   /// emit `nullptr` (the replay does not consume the value); non-pointer
@@ -480,6 +482,7 @@ struct ReproBuffer {
     (appendOne(std::forward<Args>(args)), ...);
   }
 };
+#pragma clang diagnostic pop
 
 /// Matches std::vector<T*> for any pointer element type. Used by
 /// TraceRegion::record to recognise functions whose return value is a
