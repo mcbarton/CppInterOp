@@ -16,7 +16,7 @@ runs:
           git clone --depth=1 --branch v${{ matrix.cling-version }} https://github.com/root-project/cling.git
           git clone --depth=1 -b ${{ matrix.root-llvm-tag }} https://github.com/root-project/llvm-project.git
         else # repl
-          git clone --depth=1 -b release/${{ matrix.clang-runtime }}.x https://github.com/llvm/llvm-project.git
+          git clone --depth=1 https://github.com/llvm/llvm-project.git
         fi
         cd llvm-project
         # Build
