@@ -2549,6 +2549,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
 #endif
   if (TypeParam::isOutOfProcess)
     GTEST_SKIP() << "Test fails for OOP JIT builds";
+
   std::vector<const char*> interpreter_args = {"-include", "new"};
   std::vector<Decl*> Decls, SubDecls;
 
@@ -2570,13 +2571,16 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
 
   GetAllTopLevelDecls(code, Decls, false, interpreter_args);
   GetAllSubDecls(Decls[1], SubDecls);
+
   testing::internal::CaptureStdout();
   Cpp::DeclRef scope = Cpp::GetNamed("C");
   Cpp::ObjectRef object = Cpp::Construct(scope);
-  EXPECT_TRUE(object);
   std::string output = testing::internal::GetCapturedStdout();
+
+  EXPECT_TRUE(object);
   EXPECT_EQ(output, "Constructor Executed");
   output.clear();
+
   // Construct(scope, arena=nullptr) new-expressions the object; release it.
   Cpp::Destruct(object, scope, /*withFree=*/true, /*count=*/0);
 
@@ -2584,22 +2588,26 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
   testing::internal::CaptureStdout();
   void* where = Cpp::Allocate(scope).data;
   EXPECT_TRUE(where == Cpp::Construct(scope, where).data);
+  output = testing::internal::GetCapturedStdout();
+
   // Check for the value of x which should be at the start of the object.
   EXPECT_TRUE(*(int*)where == 12345);
-  output = testing::internal::GetCapturedStdout();
   EXPECT_EQ(output, "Constructor Executed");
   output.clear();
+
   Cpp::Destruct(where, scope, /*withFree=*/false, /*count=*/0);
   Cpp::Deallocate(scope, where);
 
-  // Pass a constructor
+  // Pass a constructor.
   testing::internal::CaptureStdout();
   where = Cpp::Allocate(scope).data;
   EXPECT_TRUE(where == Cpp::Construct(SubDecls[3], where).data);
-  EXPECT_TRUE(*(int*)where == 12345);
   output = testing::internal::GetCapturedStdout();
+
+  EXPECT_TRUE(*(int*)where == 12345);
   EXPECT_EQ(output, "Constructor Executed");
   output.clear();
+
   Cpp::Destruct(where, scope, /*withFree=*/false, /*count=*/0);
   Cpp::Deallocate(scope, where);
 
