@@ -2554,6 +2554,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
 
   std::string code = R"(
     #include <new>
+    #include <stdio.h>
     extern "C" int printf(const char*,...);
     class C {
     public:
@@ -2561,6 +2562,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
       C() {
         x = 12345;
         printf("Constructor Executed");
+        fflush(stdout);
       }
     };
     void construct() { return; }
@@ -2669,12 +2671,14 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_ConstructNested) {
 
   Interp->declare(R"(
     #include <new>
+    #include <stdio.h>
     extern "C" int printf(const char*,...);
     class A {
     public:
       int a_val;
       A() : a_val(7) {
         printf("A Constructor Called\n");
+        fflush(stdout);
       }
     };
 
@@ -2684,6 +2688,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_ConstructNested) {
       int b_val;
       B() : b_val(99) {
         printf("B Constructor Called\n");
+        fflush(stdout);
       }
     };
     )");
@@ -2726,12 +2731,14 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_ConstructArray) {
 
   Interp->declare(R"(
       #include <new>
+      #include <stdio.h>
       extern "C" int printf(const char*,...);
       class C {
         int x;
         C() {
           x = 42;
           printf("\nConstructor Executed\n");
+          fflush(stdout);
         }
       };
       )");
@@ -2776,11 +2783,13 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Destruct) {
 
   Interp->declare(R"(
     #include <new>
+    #include <stdio.h>
     extern "C" int printf(const char*,...);
     class C {
       C() {}
       ~C() {
         printf("Destructor Executed");
+        fflush(stdout);
       }
     };
     )");
