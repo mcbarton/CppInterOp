@@ -2554,6 +2554,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
 
   std::string code = R"(
     #include <new>
+    #include <stdio.h>
     extern "C" int printf(const char*,...);
     class C {
     public:
@@ -2561,6 +2562,7 @@ TYPED_TEST(CPPINTEROP_TEST_MODE, FunctionReflection_Construct) {
       C() {
         x = 12345;
         printf("Constructor Executed");
+        fflush(stdout);
       }
     };
     void construct() { return; }
