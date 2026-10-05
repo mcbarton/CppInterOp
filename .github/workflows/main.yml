@@ -63,7 +63,7 @@ jobs:
             clang-runtime: '22'
             Valgrind: On
           # MacOS Arm
-          - { name: osx26-arm-clang-llvm22-cov, os: macos-26, compiler: clang, clang-runtime: '22', coverage: true }
+          - { name: osx26-arm-clang-llvm22, os: macos-26, compiler: clang, clang-runtime: '22'}
           - { name: osx26-arm-clang-llvm21, os: macos-26, compiler: clang, clang-runtime: '21', flavor: system }
           - { name: osx26-arm-clang-cling, os: macos-26, compiler: clang, clang-runtime: *cling_llvm_major, cling: 'On', flavor: cling, cling-patches: ROOT }
           # MacOS X86
